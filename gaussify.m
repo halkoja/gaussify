@@ -13,29 +13,51 @@ end
 B = sym(B);
 
 str = '';
-%str = sprintf('\\begin{gmatrix}[p]\n');
 
 [r,~] = size(A);
 
+ch = true;
 % Downward Elimination
 for j = 1:r
-    gms = gmprint(A,B);
-    str = [str sprintf('&\\begin{gmatrix}[p]\n') gms];
+    if ch
+        gms = gmprint(A,B);
+        str = [str sprintf('&\\begin{gmatrix}[p]\n') gms];
+    end
     if j < r
-        str = [str sprintf('\\rowops\n')];
+        if ch
+            str = [str sprintf('\\rowops\n')];
+        end
+        ch = false;
         for k=j+1:r
             multip = -A(k,j)/A(j,j);
+            
+            if multip ~= 0
+               ch = true;
+            else
+                continue
+            end
             
             A(k,:) = multip*A(j,:) + A(k,:);
             B(k,:) = multip*B(j,:) + B(k,:);
             
             str = [str sprintf('\\mult{%d}{%s}\n\\add{%d}{%d}\n', j-1,['\cdot ' sprintf(format_mult(multip))],j-1,k-1)];
         end
-        str = [str sprintf('\\end{gmatrix}\n\\\\ \\implies \n')];
+        if ch
+            str = [str sprintf('\\end{gmatrix}\n\\\\ \\implies \n')];
+        end
     else
-        str = [str sprintf('\\rowops\n')];
+        if ch
+            str = [str sprintf('\\rowops\n')];
+        end
+        ch = false;
         for k = r-1:-1:1
             multip = -A(k,j)/A(j,j);
+            
+            if multip ~= 0
+                ch = true;
+            else
+                continue
+            end
             
             A(k,:) = multip*A(j,:) + A(k,:);
             B(k,:) = multip*B(j,:) + B(k,:);
@@ -44,41 +66,62 @@ for j = 1:r
                 sprintf('\\mult{%d}{%s}\n\\add{%d}{%d}\n', ...
                 j-1,['\cdot ' sprintf(format_mult(multip))],j-1,k-1)];
         end
-        str = [str sprintf('\\end{gmatrix}\n\\\\\\implies')];
+        str = [str sprintf('\\end{gmatrix}\n')];
+        if ch
+            str = [str sprintf('\\\\\\implies')];
+        end
     end
-    
 end
 
 % Upwards
 for j = r-1:-1:1
-    gms = gmprint(A,B);
-    str = [str sprintf('&\\begin{gmatrix}[p]\n') gms];
+    if ch
+        gms = gmprint(A,B);
+        str = [str sprintf('&\\begin{gmatrix}[p]\n') gms];
+    end
     if j > 1
-        str = [str sprintf('\\rowops\n')];
+        if ch
+            str = [str sprintf('\\rowops')];
+        end
+        ch = false;
         for k=j-1:-1:1
             multip = -A(k,j)/A(j,j);
+            
+            if multip ~= 0
+                ch = true;
+            else
+                continue
+            end
             
             A(k,:) = multip*A(j,:) + A(k,:);
             B(k,:) = multip*B(j,:) + B(k,:);
             
-            str = [str sprintf('\\mult{%d}{%s}\n\\add{%d}{%d}\n', j-1,['\cdot ' sprintf(format_mult(multip))],j-1,k-1)];
+            str = [str sprintf('\n\\mult{%d}{%s}\n\\add{%d}{%d}', j-1,['\cdot ' sprintf(format_mult(multip))],j-1,k-1)];
         end
-        str = [str sprintf('\\end{gmatrix}\n\\\\ \n \\implies \n')];
+        if ch
+            str = [str sprintf('\n\\end{gmatrix}\n\\\\ \n \\implies \n')];
+        end
     end
 end
 
 % Normalize
-str = [str sprintf('\\rowops')];
+if ch
+    str = [str sprintf('\\rowops')];
+end
+ch = false;
 for k = 1:r
     if A(k,k) ~= 1
+        ch = true;
         nrm = 1/A(k,k);
         A(k,:) = A(k,:)*nrm;
         B(k,:) = B(k,:)*nrm;
-        str = [str sprintf('\n\\mult{%d}{%s}', k-1,['\cdot ' sprintf(format_mult(nrm))])];
+        str = [str sprintf('\n\\mult{%d}{%s}', k-1,['\cdot ' sprintf(format_mult(nrm))])];       
     end
 end
-str = [str sprintf('\n\\end{gmatrix}\n\\\\ \n\\implies\n')];
-str = [str sprintf('&\\begin{gmatrix}[p]\n') gmprint(A,B) '\end{gmatrix}'];
+if ch
+    str = [str sprintf('\n\\end{gmatrix}\n\\\\ \n\\implies\n')];
+    str = [str sprintf('&\\begin{gmatrix}[p]\n') gmprint(A,B) '\end{gmatrix}'];
+end
 
 
 clipboard('copy', str)
@@ -100,6 +143,9 @@ if length(parts) < 1
 elseif parts{2}==1
     ele_str = [neg parts{1}];
 else
+   if strcmp(parts{2}([1,end]),'()')
+       parts{2} = parts{2}(2:end-1);
+   end
     ele_str = [neg '\\frac{' num2str(parts{1}) '}{' num2str(parts{2}) '}'];
 end
 end
