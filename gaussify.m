@@ -87,7 +87,8 @@ end
 
 function ele_str = format_element(ele)
 neg = '';
-if ele < 0
+c = char(ele);
+if c(1)=='-'
     neg = '-';
     ele = -ele;
 end
@@ -120,7 +121,8 @@ end
 
 function ele_str = format_mult(ele)
 neg = 0;
-if ele < 0
+c = char(ele);
+if c(1)=='-'
     neg = 1;
 end
 
