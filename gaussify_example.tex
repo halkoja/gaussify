@@ -69,4 +69,40 @@ A = \begin{pmatrix}
 0 & 0 & 1 & | & \frac{53}{522} & \frac{17}{261} & -\frac{11}{522} 
 \end{gmatrix}
 \end{align*}
+Sample output with symbolic matrix
+\[
+A = \begin{pmatrix}
+1 & a \\
+a & 1
+\end{pmatrix}
+\]
+\begin{align*}\nonumber
+&\begin{gmatrix}[p]
+1 & a & | & 1 & 0 \\
+a & 1 & | & 0 & 1 
+\rowops
+\mult{0}{\cdot \left( -a \right)}
+\add{0}{1}
+\end{gmatrix}
+\\ \implies 
+&\begin{gmatrix}[p]
+1 & a & | & 1 & 0 \\
+0 & 1 - a^2 & | & -a & 1 
+\rowops
+\mult{1}{\cdot \frac{a}{(a^2 - 1)}}
+\add{1}{0}
+\end{gmatrix}
+\\\implies&\begin{gmatrix}[p]
+1 & 0 & | & \frac{1 - a^2}{(a^2 - 1)} & \frac{a}{(a^2 - 1)} \\
+0 & 1 - a^2 & | & -a & 1 
+\rowops
+\mult{1}{\cdot \left( -\frac{1}{(a^2 - 1)} \right)}
+\end{gmatrix}
+\\ 
+\implies
+&\begin{gmatrix}[p]
+1 & 0 & | & \frac{1 - a^2}{(a^2 - 1)} & \frac{a}{(a^2 - 1)} \\
+0 & 1 & | & \frac{a}{(a^2 - 1)} & -\frac{1}{(a^2 - 1)} 
+\end{gmatrix}
+\end{align*}
 \end{document}
