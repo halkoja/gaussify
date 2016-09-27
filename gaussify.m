@@ -137,16 +137,22 @@ if c(1)=='-'
 end
 
 str = sprintf('%s',ele);
-parts=regexp(str,'([^/]*)/([^/]*)','tokens','once');
-if length(parts) < 1
+str = strrep(str,'*','');
+%parts=regexp(str,'(\(?[^/]*\)?)/(\(?[^/]*\)?)','tokens','once');
+parts=regexp(str,'(.*[+-\s])?([^/]*)/([^/]*)','tokens','once');
+%if length(str)>4, keyboard, end
+if length(parts) <= 1
     ele_str = [neg str];
-elseif parts{2}==1
-    ele_str = [neg parts{1}];
+elseif parts{end}==1
+    ele_str = [neg parts{1:end-1}];
 else
+   if strcmp(parts{end}([1,end]),'()')
+       parts{end} = parts{end}(2:end-1);
+   end
    if strcmp(parts{2}([1,end]),'()')
        parts{2} = parts{2}(2:end-1);
    end
-    ele_str = [neg '\\frac{' num2str(parts{1}) '}{' num2str(parts{2}) '}'];
+    ele_str = [neg parts{1} ' \\frac{' num2str(parts{2}) '}{' num2str(parts{3}) '}'];
 end
 end
 
