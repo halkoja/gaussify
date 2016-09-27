@@ -138,9 +138,7 @@ end
 
 str = sprintf('%s',ele);
 str = strrep(str,'*','');
-%parts=regexp(str,'(\(?[^/]*\)?)/(\(?[^/]*\)?)','tokens','once');
 parts=regexp(str,'(.*[+-\s])?([^/]*)/([^/]*)','tokens','once');
-%if length(str)>4, keyboard, end
 if length(parts) <= 1
     ele_str = [neg str];
 elseif parts{end}==1
