@@ -3,8 +3,70 @@
 \usepackage{gauss}
 \usepackage{amssymb,amsmath}
 \begin{document}
-Run \texttt{gaussify.m} in Matlab and paste the result inside the \texttt{$\backslash$align} environment below.
+Sample output with
+\[
+A = \begin{pmatrix}
+ -3 & 2 & 3 \\
+ 5 & -7 & 11 \\
+ 1 & -12 & 0
+\end{pmatrix}
+\]
 \begin{align*}\nonumber
-% Paste your result here:
+&\begin{gmatrix}[p]
+-3 & 2 & 3 & | & 1 & 0 & 0 \\
+5 & -7 & 11 & | & 0 & 1 & 0 \\
+1 & -12 & 1 & | & 0 & 0 & 1 
+\rowops
+\mult{0}{\cdot \frac{5}{3}}
+\add{0}{1}
+\mult{0}{\cdot \frac{1}{3}}
+\add{0}{2}
+\end{gmatrix}
+\\ \implies 
+&\begin{gmatrix}[p]
+-3 & 2 & 3 & | & 1 & 0 & 0 \\
+0 & -\frac{11}{3} & 16 & | & \frac{5}{3} & 1 & 0 \\
+0 & -\frac{34}{3} & 2 & | & \frac{1}{3} & 0 & 1 
+\rowops
+\mult{1}{\cdot \left( -\frac{34}{11} \right)}
+\add{1}{2}
+\end{gmatrix}
+\\ \implies 
+&\begin{gmatrix}[p]
+-3 & 2 & 3 & | & 1 & 0 & 0 \\
+0 & -\frac{11}{3} & 16 & | & \frac{5}{3} & 1 & 0 \\
+0 & 0 & -\frac{522}{11} & | & -\frac{53}{11} & -\frac{34}{11} & 1 
+\rowops
+\mult{2}{\cdot \frac{88}{261}}
+\add{2}{1}
+\mult{2}{\cdot \frac{11}{174}}
+\add{2}{0}
+\end{gmatrix}
+\\\implies&\begin{gmatrix}[p]
+-3 & 2 & 0 & | & \frac{121}{174} & -\frac{17}{87} & \frac{11}{174} \\
+0 & -\frac{11}{3} & 0 & | & \frac{11}{261} & -\frac{11}{261} & \frac{88}{261} \\
+0 & 0 & -\frac{522}{11} & | & -\frac{53}{11} & -\frac{34}{11} & 1 
+\rowops
+\mult{1}{\cdot \frac{6}{11}}
+\add{1}{0}
+\end{gmatrix}
+\\ 
+ \implies 
+&\begin{gmatrix}[p]
+-3 & 0 & 0 & | & \frac{125}{174} & -\frac{19}{87} & \frac{43}{174} \\
+0 & -\frac{11}{3} & 0 & | & \frac{11}{261} & -\frac{11}{261} & \frac{88}{261} \\
+0 & 0 & -\frac{522}{11} & | & -\frac{53}{11} & -\frac{34}{11} & 1 
+\rowops
+\mult{0}{\cdot \left( -\frac{1}{3} \right)}
+\mult{1}{\cdot \left( -\frac{3}{11} \right)}
+\mult{2}{\cdot \left( -\frac{11}{522} \right)}
+\end{gmatrix}
+\\ 
+\implies
+&\begin{gmatrix}[p]
+1 & 0 & 0 & | & -\frac{125}{522} & \frac{19}{261} & -\frac{43}{522} \\
+0 & 1 & 0 & | & -\frac{1}{87} & \frac{1}{87} & -\frac{8}{87} \\
+0 & 0 & 1 & | & \frac{53}{522} & \frac{17}{261} & -\frac{11}{522} 
+\end{gmatrix}
 \end{align*}
 \end{document}
