@@ -37,8 +37,8 @@ for j = 1:r
                 continue
             end
             
-            A(k,:) = multip*A(j,:) + A(k,:);
-            B(k,:) = multip*B(j,:) + B(k,:);
+            A(k,:) = simplify(multip*A(j,:) + A(k,:));
+            B(k,:) = simplify(multip*B(j,:) + B(k,:));
             
             str = [str sprintf('\\mult{%d}{%s}\n\\add{%d}{%d}\n', j-1,['\cdot ' sprintf(format_mult(multip))],j-1,k-1)];
         end
@@ -59,8 +59,8 @@ for j = 1:r
                 continue
             end
             
-            A(k,:) = multip*A(j,:) + A(k,:);
-            B(k,:) = multip*B(j,:) + B(k,:);
+            A(k,:) = simplify(multip*A(j,:) + A(k,:));
+            B(k,:) = simplify(multip*B(j,:) + B(k,:));
             
             str = [str ...
                 sprintf('\\mult{%d}{%s}\n\\add{%d}{%d}\n', ...
@@ -93,8 +93,8 @@ for j = r-1:-1:1
                 continue
             end
             
-            A(k,:) = multip*A(j,:) + A(k,:);
-            B(k,:) = multip*B(j,:) + B(k,:);
+            A(k,:) = simplify(multip*A(j,:) + A(k,:));
+            B(k,:) = simplify(multip*B(j,:) + B(k,:));
             
             str = [str sprintf('\n\\mult{%d}{%s}\n\\add{%d}{%d}', j-1,['\cdot ' sprintf(format_mult(multip))],j-1,k-1)];
         end
@@ -113,8 +113,8 @@ for k = 1:r
     if A(k,k) ~= 1
         ch = true;
         nrm = 1/A(k,k);
-        A(k,:) = A(k,:)*nrm;
-        B(k,:) = B(k,:)*nrm;
+        A(k,:) = simplify(A(k,:)*nrm);
+        B(k,:) = simplify(B(k,:)*nrm);
         str = [str sprintf('\n\\mult{%d}{%s}', k-1,['\cdot ' sprintf(format_mult(nrm))])];       
     end
 end
@@ -141,8 +141,6 @@ str = strrep(str,'*','');
 parts=regexp(str,'(.*[+-\s])?([^/]*)/([^/]*)','tokens','once');
 if length(parts) <= 1
     ele_str = [neg str];
-elseif parts{end}==1
-    ele_str = [neg parts{1:end-1}];
 else
    if strcmp(parts{end}([1,end]),'()')
        parts{end} = parts{end}(2:end-1);
@@ -150,7 +148,7 @@ else
    if strcmp(parts{2}([1,end]),'()')
        parts{2} = parts{2}(2:end-1);
    end
-    ele_str = [neg parts{1} ' \\frac{' num2str(parts{2}) '}{' num2str(parts{3}) '}'];
+    ele_str = [neg parts{1} ' \\frac{' parts{2} '}{' parts{3} '}'];
 end
 end
 
