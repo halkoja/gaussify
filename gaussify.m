@@ -13,6 +13,7 @@ end
 B = sym(B);
 
 str = '';
+nl = sprintf('\n');
 
 [r,~] = size(A);
 
@@ -21,11 +22,11 @@ ch = true;
 for j = 1:r
     if ch
         gms = gmprint(A,B);
-        str = [str sprintf('&\\begin{gmatrix}[p]\n') gms];
+        str = [str '&\begin{gmatrix}[p]' nl gms];
     end
     if j < r
         if ch
-            str = [str sprintf('\\rowops\n')];
+            str = [str '\rowops' nl];
         end
         ch = false;
         for k=j+1:r
@@ -37,10 +38,10 @@ for j = 1:r
                 continue
             end
             
-            A(k,:) = simplify(multip*A(j,:) + A(k,:));
-            B(k,:) = simplify(multip*B(j,:) + B(k,:));
+            A(k,:) = simplifyFraction(multip*A(j,:) + A(k,:));
+            B(k,:) = simplifyFraction(multip*B(j,:) + B(k,:));
             
-            str = [str sprintf('\\mult{%d}{%s}\n\\add{%d}{%d}\n', j-1,['\cdot ' sprintf(format_mult(multip))],j-1,k-1)];
+            str = [str sprintf('\\mult{%d}{%s}\n\\add{%d}{%d}\n', j-1,['\cdot ' format_mult(multip)],j-1,k-1)];
         end
         if ch
             str = [str sprintf('\\end{gmatrix}\n\\\\ \\implies \n')];
@@ -59,16 +60,16 @@ for j = 1:r
                 continue
             end
             
-            A(k,:) = simplify(multip*A(j,:) + A(k,:));
-            B(k,:) = simplify(multip*B(j,:) + B(k,:));
+            A(k,:) = simplifyFraction(multip*A(j,:) + A(k,:));
+            B(k,:) = simplifyFraction(multip*B(j,:) + B(k,:));
             
             str = [str ...
                 sprintf('\\mult{%d}{%s}\n\\add{%d}{%d}\n', ...
-                j-1,['\cdot ' sprintf(format_mult(multip))],j-1,k-1)];
+                j-1,['\cdot ' format_mult(multip)],j-1,k-1)];
         end
-        str = [str sprintf('\\end{gmatrix}\n')];
+        str = [str '\end{gmatrix}' nl];
         if ch
-            str = [str sprintf('\\\\\\implies')];
+            str = [str '\\' nl '\implies'];
         end
     end
 end
@@ -77,11 +78,11 @@ end
 for j = r-1:-1:1
     if ch
         gms = gmprint(A,B);
-        str = [str sprintf('&\\begin{gmatrix}[p]\n') gms];
+        str = [str '&\begin{gmatrix}[p]' nl gms];
     end
     if j > 1
         if ch
-            str = [str sprintf('\\rowops')];
+            str = [str '\rowops'];
         end
         ch = false;
         for k=j-1:-1:1
@@ -93,10 +94,10 @@ for j = r-1:-1:1
                 continue
             end
             
-            A(k,:) = simplify(multip*A(j,:) + A(k,:));
-            B(k,:) = simplify(multip*B(j,:) + B(k,:));
+            A(k,:) = simplifyFraction(multip*A(j,:) + A(k,:));
+            B(k,:) = simplifyFraction(multip*B(j,:) + B(k,:));
             
-            str = [str sprintf('\n\\mult{%d}{%s}\n\\add{%d}{%d}', j-1,['\cdot ' sprintf(format_mult(multip))],j-1,k-1)];
+            str = [str sprintf('\n\\mult{%d}{%s}\n\\add{%d}{%d}', j-1,['\cdot ' format_mult(multip)],j-1,k-1)];
         end
         if ch
             str = [str sprintf('\n\\end{gmatrix}\n\\\\ \n \\implies \n')];
@@ -113,9 +114,9 @@ for k = 1:r
     if A(k,k) ~= 1
         ch = true;
         nrm = 1/A(k,k);
-        A(k,:) = simplify(A(k,:)*nrm);
-        B(k,:) = simplify(B(k,:)*nrm);
-        str = [str sprintf('\n\\mult{%d}{%s}', k-1,['\cdot ' sprintf(format_mult(nrm))])];       
+        A(k,:) = simplifyFraction(A(k,:)*nrm);
+        B(k,:) = simplifyFraction(B(k,:)*nrm);
+        str = [str sprintf('\n\\mult{%d}{%s}', k-1,['\cdot ' format_mult(nrm)])];       
     end
 end
 if ch
@@ -128,55 +129,25 @@ clipboard('copy', str)
 disp('LaTeX code copied to clipboard.')
 end
 
-function ele_str = format_element(ele)
-neg = '';
-c = char(ele);
-if c(1)=='-'
-    neg = '-';
-    ele = -ele;
-end
-
-str = sprintf('%s',ele);
-str = strrep(str,'*','');
-parts=regexp(str,'(.*[+-\s])?([^/]*)/([^/]*)','tokens','once');
-if length(parts) <= 1
-    ele_str = [neg str];
-else
-   if strcmp(parts{end}([1,end]),'()')
-       parts{end} = parts{end}(2:end-1);
-   end
-   if strcmp(parts{2}([1,end]),'()')
-       parts{2} = parts{2}(2:end-1);
-   end
-    ele_str = [neg parts{1} ' \\frac{' parts{2} '}{' parts{3} '}'];
-end
-end
-
 function str = gmprint(A,B)
 str = '';
 for i = 1:size(A,1)
     for j = 1:size(A,2)
-        str = [str format_element(A(i,j)) ' & '];
+        str = [str latex(A(i,j)) ' & '];
     end
     str = [str '| & '];
     for j = 1:size(B,2)
-        str = [str format_element(B(i,j)) ' & '];
+        str = [str latex(B(i,j)) ' & '];
     end
-    str = [str(1:end-2) '\\\\\n'];
+    str = [str(1:end-2) '\\' sprintf('\n')];
 end
-str = sprintf([str(1:end-6) '\n']);
+str = [str(1:end-4) sprintf('\n')];
 end
 
 function ele_str = format_mult(ele)
-neg = 0;
-c = char(ele);
-if c(1)=='-'
-    neg = 1;
-end
+ele_str = latex(ele);
 
-ele_str = format_element(ele);
-
-if neg
-    ele_str = ['\\left( ' ele_str ' \\right)'];
+if ele_str(1) == '-'
+    ele_str = ['\left( ' ele_str ' \right)'];
 end
 end
