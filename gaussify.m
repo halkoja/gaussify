@@ -25,10 +25,7 @@ ch = true;
 for j = 1:r-1
     if ch
         gms = gmprint(A,B);
-        str = [str gbeg gms];
-    end
-    if ch
-        str = [str '\rowops' nl];
+        str = [str gbeg gms '\rowops' nl];
     end
     ch = false;
     for k=j+1:r
@@ -53,27 +50,23 @@ for j = r:-1:2
     if ch
         gms = gmprint(A,B);
         str = [str gbeg gms];
+        str = [str '\rowops' nl];
     end
-    if j > 1
-        if ch
-            str = [str '\rowops' nl];
+    ch = false;
+    for k=j-1:-1:1
+        multip = -A(k,j)/A(j,j);
+        if multip ~= 0
+            ch = true;
+        else
+            continue
         end
-        ch = false;
-        for k=j-1:-1:1
-            multip = -A(k,j)/A(j,j);         
-            if multip ~= 0
-                ch = true;
-            else
-                continue
-            end
-            A(k,:) = simplifyFraction(multip*A(j,:) + A(k,:));
-            B(k,:) = simplifyFraction(multip*B(j,:) + B(k,:));
-            
-            str = [str mulstr(j-1,multip) addstr(j-1,k-1)];
-        end
-        if ch
-            str = [str gend '\\' nl imp];
-        end
+        A(k,:) = simplifyFraction(multip*A(j,:) + A(k,:));
+        B(k,:) = simplifyFraction(multip*B(j,:) + B(k,:));
+        
+        str = [str mulstr(j-1,multip) addstr(j-1,k-1)];
+    end
+    if ch
+        str = [str gend '\\' nl imp];
     end
 end
 
@@ -129,8 +122,8 @@ end
 end
 
 function astr = addstr(r1,r2)
-    astr = ['\add{' num2str(r1) '}{' num2str(r2) '}' sprintf('\n')];
+astr = ['\add{' num2str(r1) '}{' num2str(r2) '}' sprintf('\n')];
 end
 function mstr = mulstr(r,mult)
-    mstr = ['\mult{' num2str(r) '}{\cdot ' num2str(format_mult(mult)) '}' sprintf('\n')];
+mstr = ['\mult{' num2str(r) '}{\cdot ' num2str(format_mult(mult)) '}' sprintf('\n')];
 end
